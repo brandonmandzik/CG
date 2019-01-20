@@ -37,7 +37,7 @@ void main(){
 	vec3 reflectDir = reflect(-lightDir, tempnormal);
 
 	
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 8);
 	vec3 specular = specularStrength * spec * vec3(1.0,1.0,1.0); 
 	
 
