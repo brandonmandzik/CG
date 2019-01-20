@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
-
+import lenz.opengl.Texture;
 import lenz.opengl.AbstractOpenGLBase;
 import lenz.opengl.ShaderProgram;
 
@@ -40,7 +40,6 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 		
 		vaold = glGenVertexArrays();
 		glBindVertexArray(vaold);
-		int vbold = glGenBuffers();
 		float[] wuerfel = new float[] {
 				// vorne
 				-0.5F, -0.5F, 0.5F, 0.5F, -0.5F, 0.5F, -0.5F, 0.5F, 0.5F, -0.5F, 0.5F, 0.5F, 0.5F, -0.5F, 0.5F, 0.5F,
@@ -70,9 +69,8 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 				0.5F, 0.5F, 0.5F, 0.5F, -0.5F, 0.5F, 0.5F, 0.5F, -0.5F,
 
 				0.5F, -0.5F, 0.5F, 0.5F, -0.5F, -0.5F, 0.5F, 0.5F, -0.5F };
-		bind(vbold, wuerfel, 0);
+		bind(wuerfel, 0, 3);
 
-		int vboColors = glGenBuffers();
 		float[] normalen = new float[36 * 3];
 		float[] möglicheNormalen = new float[] { 0, 0, 1, 0, 0, -1, 0, -1, 0, 0, 1, 0, -1, 0, 0, 1, 0, 0 };
 		int arraypos = 0;
@@ -83,8 +81,66 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 				normalen[arraypos++] = möglicheNormalen[3 * s + 2];
 			}
 		}
-		bind(vboColors, normalen, 1);
+		bind(normalen, 1,3);
 		
+		float[] uvs = new float[] {
+                //front
+                0, 1,
+                1, 1,
+                0, 0,
+
+                0, 0,
+                1, 1,
+                1, 0,
+
+                //back
+                1, 1,
+                1, 0,
+                0, 1,
+
+                1, 0,
+                0, 0,
+                0, 1,
+
+                //bottom
+                0, 0,
+                1, 1,
+                1, 0,
+
+                0, 0,
+                0, 1,
+                1, 1,
+
+                //top
+                0, 1,
+                1, 1,
+                1, 0,
+
+                0, 1,
+                1, 0,
+                0, 0,
+
+                //left
+                1, 0,
+                0, 0,
+                1, 1,
+
+                1, 1,
+                0, 0,
+                0, 1,
+
+                //right
+                0, 0,
+                0, 1,
+                1, 0,
+
+                0, 1,
+                1, 1,
+                1, 0};
+		bind(uvs, 2,2);
+		
+		Texture cubeTexture = new Texture("monogram.jpg");
+		glBindTexture(GL_TEXTURE_2D, cubeTexture.getId());
 		
 		
 		
@@ -93,9 +149,9 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 		
 		vaoTetra = glGenVertexArrays();
 		glBindVertexArray(vaoTetra);
-		int vboVertices = glGenBuffers();
+	
 		tetraVertices = og.generateTetra(6);
-		bind (vboVertices, tetraVertices, 0);
+		bind (tetraVertices, 0,3);
 		
 		
 		
@@ -138,25 +194,25 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 	@Override
 	protected void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 		draw(vaold, shaderProgram, transformationMatrix, viewMatrix, 36);
-		
-		draw(vaoTetra, shaderProgramKugel, transformationMatrix, viewMatrixSec, tetraVertices.length/2);
+
+		draw(vaoTetra, shaderProgramKugel, transformationMatrix, viewMatrixSec, tetraVertices.length / 2);
 	}
 
 	@Override
 	public void destroy() {
 	}
-	
-	public void bind(int vbo, float[] vertices, int loc ) {
 
+	public void bind(float[] vertices, int loc, int size) {
+		int vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(loc, 3, GL_FLOAT, false, 0, 0);
+		glVertexAttribPointer(loc, size, GL_FLOAT, false, 0, 0);
 		glEnableVertexAttribArray(loc);
 	}
 
-	public void draw(int vao, ShaderProgram shader, Matrix4 trans, Matrix4 view, int vertices ) {
+	public void draw(int vao, ShaderProgram shader, Matrix4 trans, Matrix4 view, int vertices) {
 		glBindVertexArray(vao);
 		glUseProgram(shader.getId());
 		float[] matrixFloatArray = trans.getValuesAsArray();
@@ -167,6 +223,5 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 		// VAOs zeichnen
 		glDrawArrays(GL_TRIANGLES, 0, vertices);
 	}
-
 
 }
