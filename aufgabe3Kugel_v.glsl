@@ -8,6 +8,8 @@ uniform mat4 viewMatrix;
 out vec3 eckenFarben;
 out vec3 normalVector;
 out vec3 FragPos;
+
+
    
         
         
