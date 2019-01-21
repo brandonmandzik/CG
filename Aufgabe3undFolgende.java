@@ -28,6 +28,7 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 	private int vaoTetra;
 	private int vaold;
 	private float[] tetraVertices;
+	private Texture cubeTexture;
 
 	public static void main(String[] args) {
 		new Aufgabe3undFolgende().start("CG Aufgabe 3", 700, 700);
@@ -35,9 +36,12 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
 	@Override
 	protected void init() {
+		cubeTexture  = new Texture("monogram.jpg");
+		glBindTexture(GL_TEXTURE_2D, cubeTexture.getId());
 		shaderProgram = new ShaderProgram("aufgabe3");
 		shaderProgramKugel = new ShaderProgram("aufgabe3Kugel");
-		
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 		vaold = glGenVertexArrays();
 		glBindVertexArray(vaold);
 		float[] wuerfel = new float[] {
@@ -139,8 +143,10 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
                 1, 0};
 		bind(uvs, 2,2);
 		
-		Texture cubeTexture = new Texture("monogram.jpg");
-		glBindTexture(GL_TEXTURE_2D, cubeTexture.getId());
+		
+		
+		
+		
 		
 		
 		
@@ -161,6 +167,7 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
 		glEnable(GL_DEPTH_TEST); // z-Buffer aktivieren
 //		glEnable(GL_CULL_FACE); // backface culling aktivieren
+		
 		
 		glUseProgram(shaderProgram.getId());
 		int uniformProjectionMatrixID = glGetUniformLocation(shaderProgram.getId(), "projectionMatrix");
@@ -195,8 +202,12 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 	protected void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
+		
 		draw(vaold, shaderProgram, transformationMatrix, viewMatrix, 36);
-
+		
+		
+		
 		draw(vaoTetra, shaderProgramKugel, transformationMatrix, viewMatrixSec, tetraVertices.length / 2);
 	}
 
